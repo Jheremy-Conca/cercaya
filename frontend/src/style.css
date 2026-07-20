@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@import "./assets/main.css" layer(base);
+
+@theme {
+  --color-primary: #f97316;
+  --color-primary-hover: #ea580c;
+}

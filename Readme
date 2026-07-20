@@ -1,0 +1,117 @@
+# CercaYa
+
+Plataforma tipo Yelp para descubrir, reseñar y calificar lugares cercanos (restaurantes, cafés, parques, tiendas y más), con mapa interactivo y ubicación en tiempo real.
+
+## Tecnologías
+
+**Frontend**
+- Vue 3 + Vite
+- Pinia (manejo de estado)
+- Vue Router
+- Tailwind CSS
+- Leaflet (mapas)
+- Axios
+- vue-toastification (notificaciones)
+
+**Backend**
+- Node.js + Express
+- Sequelize ORM
+- PostgreSQL
+- JWT (autenticación)
+- Bcrypt (hash de contraseñas)
+- Multer + Cloudinary (subida de imágenes)
+- Nodemailer (recuperación de contraseña por correo)
+
+## Estructura del proyecto
+
+```
+cercaya/
+├── backend/
+│   ├── src/
+│   │   ├── config/        # Conexión a BD, Cloudinary, email
+│   │   ├── controllers/   # Lógica de negocio
+│   │   ├── middlewares/   # Auth, subida de archivos
+│   │   ├── models/        # Modelos de Sequelize
+│   │   └── routes/        # Rutas de la API
+│   └── server.js
+└── frontend/
+    ├── src/
+    │   ├── components/
+    │   ├── composables/
+    │   ├── stores/         # Pinia stores
+    │   ├── views/
+    │   └── router/
+    └── vite.config.js
+```
+
+## Funcionalidades
+
+- Registro e inicio de sesión con JWT
+- Recuperación de contraseña por correo
+- Crear, editar y eliminar lugares con ubicación en mapa (Leaflet + OpenStreetMap)
+- Búsqueda de lugares cercanos por geolocalización
+- Filtrado por categoría
+- Reseñas con calificación por estrellas y fotos
+- Perfil de usuario con sus lugares y reseñas
+- Modo claro/oscuro
+
+## Configuración local
+
+### Backend
+
+```bash
+cd backend
+npm install
+```
+
+Crea un archivo `.env` en `backend/` con:
+
+```dotenv
+PORT=3000
+DB_NAME=nombre_de_tu_bd
+DB_USER=tu_usuario
+DB_PASSWORD=tu_password
+DB_HOST=localhost
+DB_PORT=5432
+JWT_SECRET=una_clave_secreta_larga_y_aleatoria
+
+CLOUDINARY_CLOUD_NAME=tu_cloud_name
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
+
+EMAIL_USER=tu_correo@gmail.com
+EMAIL_PASS=tu_contraseña_de_aplicacion
+
+FRONTEND_URL=http://localhost:5173
+```
+
+```bash
+npm run dev
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+```
+
+Crea un archivo `.env` en `frontend/` con:
+
+```dotenv
+VITE_API_URL=http://localhost:3000/api
+```
+
+```bash
+npm run dev
+```
+
+## Despliegue
+
+- **Backend:** Render (Web Service)
+- **Base de datos:** PostgreSQL (Render)
+- **Frontend:** Netlify
+
+## Autor
+
+Jheremy Conca

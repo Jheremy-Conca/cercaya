@@ -1,0 +1,36 @@
+@import './base.css';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  line-height: 1.6;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+#app {
+  width: 100%;
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+textarea,
+select {
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
