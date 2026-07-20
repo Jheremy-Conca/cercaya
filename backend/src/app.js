@@ -4,13 +4,23 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+const origenesPermitidos = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173', // para que sigas pudiendo probar en local
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || origenesPermitidos.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Servir archivos estáticos (fotos subidas)
-app.use('/uploads', express.static('uploads'));
-
 // Ruta de prueba
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', mensaje: 'Servidor funcionando correctamente' });
