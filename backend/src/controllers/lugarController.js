@@ -209,13 +209,12 @@ const eliminarLugar = async (req, res) => {
     }
 
     await lugar.destroy();
-    res.json({ mensaje: 'Lugar eliminado correctamente.' });
+    res.json({ mensaje: 'Lugar y sus reseñas asociadas fueron eliminados correctamente.' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al eliminar el lugar.', error: error.message });
   }
 };
-
 // Buscar lugares cercanos (público) — ahora también con rating real
 const lugaresCercanos = async (req, res) => {
   try {
