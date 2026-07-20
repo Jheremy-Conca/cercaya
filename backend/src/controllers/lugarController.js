@@ -1,6 +1,18 @@
 const { Lugar, Usuario } = require('../models');
 const { sequelize } = require('../config/db');
 
+// Fórmula de Haversine en SQL: distancia en metros entre dos puntos lat/lng.
+// El LEAST/GREATEST evita errores de dominio en acos() por redondeo de punto flotante.
+const FORMULA_DISTANCIA_METROS = `
+  6371000 * acos(
+    LEAST(1, GREATEST(-1,
+      cos(radians(:lat)) * cos(radians(latitud)) *
+      cos(radians(longitud) - radians(:lng)) +
+      sin(radians(:lat)) * sin(radians(latitud))
+    ))
+  )
+`;
+
 const crearLugar = async (req, res) => {
   try {
     const { nombre, categoria, direccion, descripcion, latitud, longitud } = req.body;
@@ -17,11 +29,7 @@ const crearLugar = async (req, res) => {
       SELECT id, nombre
       FROM lugares
       WHERE LOWER(nombre) = LOWER(:nombre)
-        AND ST_DWithin(
-          ubicacion,
-          ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography,
-          :radio
-        )
+        AND ${FORMULA_DISTANCIA_METROS} <= :radio
       LIMIT 1
       `,
       {
@@ -150,11 +158,7 @@ const editarLugar = async (req, res) => {
       FROM lugares
       WHERE LOWER(nombre) = LOWER(:nombre)
         AND id != :id
-        AND ST_DWithin(
-          ubicacion,
-          ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography,
-          :radio
-        )
+        AND ${FORMULA_DISTANCIA_METROS} <= :radio
       LIMIT 1
       `,
       {
@@ -225,13 +229,15 @@ const lugaresCercanos = async (req, res) => {
 
     const lugares = await sequelize.query(
       `
-      SELECT
-        id, nombre, categoria, direccion, descripcion, latitud, longitud,
-        ST_Distance(ubicacion, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography) AS distancia_metros,
-        COALESCE((SELECT AVG(rating) FROM resenas WHERE resenas.lugar_id = lugares.id), 0) AS "ratingPromedio",
-        (SELECT COUNT(*) FROM resenas WHERE resenas.lugar_id = lugares.id) AS "totalResenas"
-      FROM lugares
-      WHERE ST_DWithin(ubicacion, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography, :radioMetros)
+      SELECT * FROM (
+        SELECT
+          id, nombre, categoria, direccion, descripcion, latitud, longitud,
+          ${FORMULA_DISTANCIA_METROS} AS distancia_metros,
+          COALESCE((SELECT AVG(rating) FROM resenas WHERE resenas.lugar_id = lugares.id), 0) AS "ratingPromedio",
+          (SELECT COUNT(*) FROM resenas WHERE resenas.lugar_id = lugares.id) AS "totalResenas"
+        FROM lugares
+      ) sub
+      WHERE distancia_metros <= :radioMetros
       ORDER BY distancia_metros ASC
       `,
       {
